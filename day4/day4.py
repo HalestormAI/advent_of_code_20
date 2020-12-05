@@ -34,6 +34,9 @@ def parse_passports(raw_data):
             continue
         cur_lines.append(line)
 
+    if cur_lines:
+        passports.append(parse(cur_lines))
+
     return passports
 
 
