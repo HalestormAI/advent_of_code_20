@@ -6,7 +6,7 @@ from operator import mul
 
 import numpy as np
 
-sys.path.append(str(pathlib.Path(__file__).parent))
+sys.path.append(str(pathlib.Path(__file__).parent.parent))
 import utils
 
 INPUT_URL = 'https://adventofcode.com/2020/day/3/input'

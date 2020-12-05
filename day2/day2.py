@@ -5,7 +5,7 @@ import sys
 INPUT_URL = 'https://adventofcode.com/2020/day/2/input'
 TARGET = 2020
 
-sys.path.append(str(pathlib.Path(__file__).parent))
+sys.path.append(str(pathlib.Path(__file__).parent.parent))
 import utils
 
 
