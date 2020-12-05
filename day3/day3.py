@@ -1,4 +1,6 @@
 import math
+from functools import reduce
+from operator import mul
 
 import numpy as np
 
@@ -9,22 +11,46 @@ INPUT_URL = 'https://adventofcode.com/2020/day/3/input'
 
 # I'm going to import numpy to make repeating right easier...
 
-def get_map(filename, num_rights):
-    with open(filename) as fh:
-        map = []
-        for line in fh:
+def get_map(raw_data, num_rights):
+    """
+    For each line in the map text file, load it into a boolean array, then convert to
+    numpy, to allow us to tile it easily (this isn't required for the algo, but saves
+    some boilerplate).
+
+    We work out how many times to replicate the map right by taking the number of right
+    moves to make on a single row, then multiplying that by the number of rows. We then
+    ceil-divide that to get the number of copies of the map we need right-wards.
+
+    :param raw_data:    The raw text data from the input file
+    :param num_rights:  The largest number of right-moves we need per row.
+    :return:            The map, sufficiently wide for the required moves, as a boolean np array.
+    """
+    map = []
+    for line in raw_data.split("\n"):
+        if line.strip() != "":
             map.append([c == '#' for c in line.strip()])
 
-        np_map = np.array(map)
+    np_map = np.array(map)
 
-        # Figure out how many times we need to repeat the map right to handle all moves
-        total_right = np_map.shape[0] * num_rights
-        num_repeats = math.ceil(total_right / np_map.shape[1])
+    # Figure out how many times we need to repeat the map right to handle all moves
+    total_right = np_map.shape[0] * num_rights
+    num_repeats = math.ceil(total_right / np_map.shape[1])
 
-        return np.tile(np_map, (1, num_repeats))
+    return np.tile(np_map, (1, num_repeats))
 
 
 def traverse(map, rights, downs):
+    """
+    Traverse a map, created using `get_map`, by repeating through the move and advancing a
+    position pointer accordingly. We stop when we've passed beyond the last row of the map.
+
+    As we hit a tree, we increment a counter, which is retuened at the end.
+
+    :param map:     Boolean numpy map from `get_map`
+    :param rights:  The number of right-cells to move in a single step
+    :param downs:   The number of down-cells to move in a single step
+    :return:        The number of trees we hit along the way.
+    """
     current_pos = [0, 0]
 
     num_trees = 0
@@ -39,16 +65,44 @@ def traverse(map, rights, downs):
     return num_trees
 
 
-def print_map(map):
-    for r in map:
-        for x in r:
-            print('#' if x else '.', end='')
-        print("")
+def task_1(data):
+    """
+    Navigate the map with the given move of (3, 1)
+    :param data: The raw data from the input file
+    :return: None
+    """
+    map = get_map(data, 3)
+    trees = traverse(map, 3, 1)
+    print(f"Hit {trees} trees along the way")
+
+
+def task_2(data, routes):
+    """
+    Navigate the map with the set of moved provided for task 2.
+    :param data: The raw data from the input file
+    :return: None
+    """
+    max_right = max(r[0] for r in routes)
+    map = get_map(data, max_right)
+
+    route_trees = [traverse(map, r[0], r[1]) for r in routes]
+    prod = reduce(mul, route_trees, 1)
+    print(f"Hit {prod} trees along the way over all paths")
 
 
 if __name__ == "__main__":
     input_data = utils.load_input_data("cached_input.txt", INPUT_URL, '../session_cookie.txt')
-    map = get_map("cached_input.txt", 3)
-    print_map(map)
-    trees = traverse(map, 3, 1)
-    print(f"Hit {trees} trees along the way")
+
+    print("Task 1:")
+    task_1(input_data)
+
+    print("")
+    print("Task 2:")
+    routes = [
+        (1, 1),
+        (3, 1),
+        (5, 1),
+        (7, 1),
+        (1, 2)
+    ]
+    task_2(input_data, routes)
