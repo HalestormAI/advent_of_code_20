@@ -38,9 +38,12 @@ def parse_input_data(cache_file, url, cookie_file):
     return [d for d in data if d is not None]
 
 
-def check_pwd_validity(input_data):
+def check_pwd_validity_task_1(input_data):
     """
     Run through all the loaded password/rule combinations and return only those that are valid.
+
+    This uses the task 1 validity rule, where `x-y z:` indicates the character `z` must appear between `x` and `y`
+    times.
 
     :param input_data: The rows of parsed input data, where each row contains (min_val, max_val, req_letter, password).
     :return: The rows from above where the password meets the requirements.
@@ -54,8 +57,33 @@ def check_pwd_validity(input_data):
     return [r for r in input_data if check_valid(r)]
 
 
+def check_pwd_validity_task_2(input_data):
+    """
+    Run through all the loaded password/rule combinations and return only those that are valid.
+
+    This uses the task 2 validity rule, where `x-y z:` indicates the character `z` must appear at either position `x`
+    or `y`, but not both. `x` and `y` are 1-indexed, not 0-indexed.
+
+    :param input_data: The rows of parsed input data, where each row contains (min_val, max_val, req_letter, password).
+    :return: The rows from above where the password meets the requirements.
+    """
+
+    def check_valid(row):
+        first_pos, second_pos, req_letter, password = row
+        is_first_pos = password[first_pos - 1] == req_letter
+        is_second_pos = password[second_pos - 1] == req_letter
+        return (is_first_pos or is_second_pos) and not (is_first_pos and is_second_pos)
+
+    return [r for r in input_data if check_valid(r)]
+
+
 if __name__ == "__main__":
     input_data = parse_input_data("cached_input.txt", INPUT_URL, '../session_cookie.txt')
-    d = check_pwd_validity(input_data)
 
+    print("Task 1:")
+    d = check_pwd_validity_task_1(input_data)
+    print(f"Found {len(d)} valid passwords")
+
+    print("Task 2:")
+    d = check_pwd_validity_task_2(input_data)
     print(f"Found {len(d)} valid passwords")
