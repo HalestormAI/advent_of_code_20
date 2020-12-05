@@ -1,12 +1,13 @@
-import sys
 import pathlib
+import sys
 from functools import reduce
-
-import requests
 from operator import mul
 
 INPUT_URL = 'https://adventofcode.com/2020/day/1/input'
 TARGET = 2020
+
+sys.path.append(str(pathlib.Path(__file__).parent))
+import utils
 
 
 # Notes:
@@ -15,41 +16,17 @@ TARGET = 2020
 #   * The input data code is unnecessary, could just read a text file, but I fancied doing it!
 
 
-def load_input_data(cache_file, url, cookie_file):
+def parse_input_data(cache_file, url, cookie_file):
     """
-    Load the input data from a local file (cache_file).
-
-    If the cache file doesn't exist, pull the input data down from the AoC server, using the session cookie created
-    on login.
-
-    To retrieve this use Chrome devtools and copy the session cookie into <cookie_file>.
-
-    Note: The cookie file and input cache are gitignored as they're user specific.
+    Calls the utility function to load either a cached data file or pull it from the AoC server, then splits it
+    on newlines, strips the lines and extracts the integer values.
 
     :param cache_file:      The file in which the input data is stored
     :param url:             The URL to the AoC page
     :param cookie_file:     The path to the cookie file (only used if the cache file isn't found
     :return: The input data as a list of ints
     """
-
-    if not pathlib.Path(cache_file).is_file():
-        try:
-            with open(cookie_file) as fh:
-                raw_cookies = fh.readlines()
-                cookies = dict(c.strip().split("=") for c in raw_cookies)
-        except FileNotFoundError:
-            print("Cookie file doesn't exist, can't pull the data. Either get the cookie, or download your input data"
-                  "and store in 'cached_input.txt' in the cwd.")
-            sys.exit(1)
-
-        response = requests.get(url, cookies=cookies)
-        with open(cache_file, 'w') as fh:
-            raw_data = response.text
-            fh.write(raw_data)
-    else:
-        with open(cache_file) as fh:
-            raw_data = fh.read()
-
+    raw_data = utils.load_input_data(cache_file, url, cookie_file)
     return [int(r.strip()) for r in raw_data.split("\n") if r.strip() != ""]
 
 
@@ -130,7 +107,7 @@ def check(numbers, expected_len):
 
 
 if __name__ == "__main__":
-    input_data = load_input_data("cached_input.txt", INPUT_URL, 'session_cookie.txt')
+    input_data = parse_input_data("cached_input.txt", INPUT_URL, 'session_cookie.txt')
 
     print("Part 1:")
     numbers = find_2020_sum_pair(input_data)
