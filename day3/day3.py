@@ -1,9 +1,12 @@
 import math
+import pathlib
+import sys
 from functools import reduce
 from operator import mul
 
 import numpy as np
 
+sys.path.append(str(pathlib.Path(__file__).parent))
 import utils
 
 INPUT_URL = 'https://adventofcode.com/2020/day/3/input'
