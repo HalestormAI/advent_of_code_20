@@ -2,3 +2,5 @@
 .idea
 *.swp
 *.pyc
+day*/cached_input.txt
+session_cookie.txt

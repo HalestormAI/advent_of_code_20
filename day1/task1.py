@@ -107,7 +107,7 @@ def check(numbers, expected_len):
 
 
 if __name__ == "__main__":
-    input_data = parse_input_data("cached_input.txt", INPUT_URL, 'session_cookie.txt')
+    input_data = parse_input_data("cached_input.txt", INPUT_URL, '../session_cookie.txt')
 
     print("Part 1:")
     numbers = find_2020_sum_pair(input_data)
