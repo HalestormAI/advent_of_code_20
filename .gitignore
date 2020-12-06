@@ -4,3 +4,4 @@
 *.pyc
 day*/cached_input.txt
 session_cookie.txt
+c++/cmake-build-debug/
