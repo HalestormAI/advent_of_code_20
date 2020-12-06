@@ -29,7 +29,7 @@ b
     [(RAW_INPUT, 6)]
 )
 def test_input_parser_complete_calls(raw_data, expected_complete):
-    parser = GroupInputParser()
+    parser = GroupInputParser(GroupInputParser.Mode.UNION)
     parser_spy = mock.Mock(wraps=parser)
 
     GroupInputParser.parse(parser_spy, raw_data)
@@ -37,14 +37,19 @@ def test_input_parser_complete_calls(raw_data, expected_complete):
 
 
 @pytest.mark.parametrize(
-    'raw_data, expected_groups',
+    'raw_data, intersect, expected_groups',
     [
-        (RAW_INPUT, ('abc', 'abc', 'abc', 'a', 'b')),
-        ("a\n\n \n\n\nabc\nd\n\ndef", ('a', 'abcd', 'def'))
+        (RAW_INPUT, False, ('abc', 'abc', 'abc', 'a', 'b')),
+        ("a\n\n \n\n\nabc\nd\n\ndef", False, ('a', 'abcd', 'def')),
+        (RAW_INPUT, True, ('abc', 'a', 'a', 'b')),
+        ("a\nb\n ab  \n\nabc\nd\n\ndef", True, ('def',)),
+        ("a\n\n \n\n\nabc\nd\n\ndef", True, ('a', 'def')),
+        ("a\nb\nc\n\n\nabc\nd\n\n\n", True, tuple())
     ]
 )
-def test_parser_correct_groupings(raw_data, expected_groups):
-    parser = GroupInputParser()
+def test_parser_correct_groupings(raw_data, intersect, expected_groups):
+    mode = GroupInputParser.Mode.INTERSECT if intersect else GroupInputParser.Mode.UNION
+    parser = GroupInputParser(mode)
     groups = parser.parse(raw_data)
     assert len(groups) == len(expected_groups)
 
@@ -58,4 +63,17 @@ def test_parser_correct_groupings(raw_data, expected_groups):
 )
 def test_integration_sum_groups(raw_data, expected_sum):
     total = calculate_sum_counts(raw_data)
+    assert total == expected_sum
+
+
+@pytest.mark.parametrize(
+    'raw_data, intersect, expected_sum',
+    [
+        (RAW_INPUT, False, 11),
+        (RAW_INPUT, True, 6)
+    ]
+)
+def test_integration_sum_groups(raw_data, intersect, expected_sum):
+    mode = GroupInputParser.Mode.INTERSECT if intersect else GroupInputParser.Mode.UNION
+    total = calculate_sum_counts(raw_data, mode)
     assert total == expected_sum
