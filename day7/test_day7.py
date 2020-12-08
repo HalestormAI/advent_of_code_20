@@ -3,7 +3,8 @@ import pytest
 from day7 import (
     extract_count_and_tag,
     naive_parser,
-    find_containers
+    find_containers,
+    find_internal_bags
 )
 
 EXAMPLE_DATA = """light red bags contain 1 bright white bag, 2 muted yellow bags.
@@ -16,6 +17,14 @@ vibrant plum bags contain 5 faded blue bags, 6 dotted black bags.
 faded blue bags contain no other bags.
 dotted black bags contain no other bags.
 """
+
+EXAMPLE_DATA_TASK_2 = """shiny gold bags contain 2 dark red bags.
+dark red bags contain 2 dark orange bags.
+dark orange bags contain 2 dark yellow bags.
+dark yellow bags contain 2 dark green bags.
+dark green bags contain 2 dark blue bags.
+dark blue bags contain 2 dark violet bags.
+dark violet bags contain no other bags."""
 
 
 @pytest.mark.parametrize(
@@ -43,7 +52,7 @@ dotted black bags contain no other bags.
         ("2 vibrant plum bags.", 2, ("vibrant", "plum"), False),
         ("4 dotted black bags.", 4, ("dotted", "black"), False),
         ("6 dotted black bags.", 6, ("dotted", "black"), False),
-        ("no other bags.", 0, tuple(), False),
+        ("no other bags.", None, None, True),
         ("Oh Christmas Tree, Oh Christmas tree, look at all these bags.", None, None, True)
     ]
 )
@@ -94,12 +103,12 @@ def test_extract_count_and_tag(line, expected_count, expected_tag, expected_none
         (
                 "faded blue bags contain no other bags.",
                 ("faded", "blue"),
-                [(0, tuple())]
+                [None]
         ),
         (
                 "dotted black bags contain no other bags",
                 ("dotted", "black"),
-                [(0, tuple())]
+                [None]
         )
     ]
 )
@@ -116,3 +125,17 @@ def test_find_container_set_example():
     edges = dict(naive_parser(line) for line in EXAMPLE_DATA.split("\n") if line.strip() != "")
     path = find_containers(edges, tgt)
     assert len(path) == 4
+
+
+@pytest.mark.parametrize(
+    "data, expected",
+    [
+        (EXAMPLE_DATA, 32),
+        (EXAMPLE_DATA_TASK_2, 126)
+    ]
+)
+def test_find_internal_bags_example(data, expected):
+    tgt = ("shiny", "gold")
+
+    edges = dict(naive_parser(line) for line in data.split("\n") if line.strip() != "")
+    assert find_internal_bags(edges, tgt, -1) == expected

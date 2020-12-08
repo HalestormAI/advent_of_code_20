@@ -10,7 +10,7 @@ INPUT_URL = 'https://adventofcode.com/2020/day/7/input'
 
 def extract_count_and_tag(item):
     if "no other bags" in item.strip():
-        return 0, tuple()
+        return None
 
     m = re.match(r'^(\d*) *(\w+) (\w+) bags*[.,]*$', item.strip())
 
@@ -52,6 +52,9 @@ def find_containers(data, key):
     containers = set()
 
     for outer, contents in data.items():
+        if contents[0] is None:
+            continue
+
         content_bag_types = [x[1] for x in contents]
         if key in content_bag_types:
             containers.add(outer)
@@ -70,8 +73,33 @@ def task_1(data):
     print(f"There are {len(path)} bags that can contain a {' '.join(tgt)} bag.")
 
 
+def find_internal_bags(data, key, offset=0):
+    contains = [c for c in data[key] if c is not None]
+    if len(contains) == 0:
+        return 1
+
+    sum = 1
+    for count, in_key in contains:
+        num = find_internal_bags(data, in_key)
+        sum += count * num
+
+    return sum + offset
+
+
+def task_2(data):
+    tgt = ("shiny", "gold")
+
+    edges = dict(naive_parser(line) for line in data.split("\n") if line.strip() != "")
+    total = find_internal_bags(edges, tgt, -1)
+
+    print(f"You'll need {total} bags - good luck!.")
+
+
 if __name__ == "__main__":
     input_data = utils.load_input_data("cached_input.txt", INPUT_URL, '../session_cookie.txt')
 
     print("Task 1")
     task_1(input_data)
+
+    print("Task 2")
+    task_2(input_data)
