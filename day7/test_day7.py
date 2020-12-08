@@ -138,4 +138,4 @@ def test_find_internal_bags_example(data, expected):
     tgt = ("shiny", "gold")
 
     edges = dict(naive_parser(line) for line in data.split("\n") if line.strip() != "")
-    assert find_internal_bags(edges, tgt, -1) == expected
+    assert find_internal_bags(edges, tgt, True) == expected
