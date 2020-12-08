@@ -2,6 +2,7 @@ import pytest
 
 from day8 import (
     HandHeld,
+    Task2HandHeld,
     InstructionAlreadyRunException
 )
 
@@ -45,10 +46,18 @@ def test_instruction_parser():
         test_input(instruction, expected[i])
 
 
-def test_instruction_reuse():
+def test_instruction_reuse_exception():
     hh = HandHeld()
     hh.parse_instructions(EXAMPLE_DATA)
 
     with pytest.raises(InstructionAlreadyRunException) as excinfo:
         hh.startup()
         assert excinfo.value.accumulator_value == 5
+
+
+def test_instruction_reuse_safe():
+    hh = Task2HandHeld()
+    hh.parse_instructions(EXAMPLE_DATA)
+    hh.startup()
+
+    assert hh.accumulator == 8
