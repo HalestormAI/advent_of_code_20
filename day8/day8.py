@@ -95,12 +95,12 @@ class Task2HandHeld(HandHeld):
         super().__init__()
 
         self._original_instructions = None
-        self._jumps_to_test = None
+        self._ops_to_test = None
 
     def parse_instructions(self, raw_input):
         super(Task2HandHeld, self).parse_instructions(raw_input)
         self._original_instructions = self.instructions.copy()
-        self._jumps_to_test = deque([i for i, f in enumerate(self.instructions) if f[0] == self.jmp])
+        self._ops_to_test = deque([i for i, f in enumerate(self.instructions) if f[0] in (self.jmp, self.nop)])
 
     def startup(self):
         if len(self.instructions) == 0:
@@ -108,11 +108,12 @@ class Task2HandHeld(HandHeld):
 
         while self.instruction_ptr < len(self.instructions):
             if self.instruction_ptr in self.executed:
-                if len(self._jumps_to_test) > 0:
+                if len(self._ops_to_test) > 0:
                     self.reset()
-                    jmp_id = self._jumps_to_test.pop()
-                    self.instructions[jmp_id] = (self.nop, None)
-                    print(f"Swapping jump {jmp_id} for a nop")
+                    jmp_id = self._ops_to_test.pop()
+                    old_op = self.instructions[jmp_id]
+                    new_op = self.nop if old_op[0] == self.jmp else self.jmp
+                    self.instructions[jmp_id] = (new_op, None)
                 else:
                     raise InstructionAlreadyRunException(self.accumulator)
             self.execute()
