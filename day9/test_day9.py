@@ -5,10 +5,10 @@ import pytest
 
 from day9 import (
     NumberList,
-    parse_data,
     task_1,
     task_2
 )
+from utils import parse_int_data
 
 EXAMPLE_DATA = """35
 20
@@ -55,7 +55,7 @@ def example_lut_5():
     ]
 )
 def test_sum_lut_initialisation(size, expected):
-    data = parse_data(EXAMPLE_DATA)
+    data = parse_int_data(EXAMPLE_DATA)
     nn = NumberList(data, size)
     for i, line_num in enumerate(nn.sums):
         for j, sum_val in enumerate(line_num):
@@ -70,7 +70,7 @@ def test_sum_lut_initialisation(size, expected):
     ]
 )
 def test_add_number(example_lut_5, n, expected):
-    data = parse_data(EXAMPLE_DATA)
+    data = parse_int_data(EXAMPLE_DATA)
     nn = NumberList(data, 5)
     nn.sums = example_lut_5
 
@@ -91,7 +91,7 @@ def test_add_number(example_lut_5, n, expected):
     ]
 )
 def test_has_sum(example_lut_5, n, expected):
-    data = parse_data(EXAMPLE_DATA)
+    data = parse_int_data(EXAMPLE_DATA)
     nn = NumberList(data, 5)
     nn.sums = example_lut_5
     assert nn._has_sum(n) is expected
@@ -109,7 +109,7 @@ def test_has_sum(example_lut_5, n, expected):
     ]
 )
 def test_is_possible_limits(min_num, max_num, x, expected):
-    data = parse_data(EXAMPLE_DATA)
+    data = parse_int_data(EXAMPLE_DATA)
     nn = NumberList(data, 5)
     nn.current_min = min_num
     nn.current_max = max_num

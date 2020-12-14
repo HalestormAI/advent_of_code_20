@@ -10,10 +10,6 @@ import utils
 INPUT_URL = 'https://adventofcode.com/2020/day/9/input'
 
 
-def parse_data(raw_data):
-    return (int(line.strip()) for line in raw_data.split("\n") if line.strip() != "")
-
-
 class NumberList:
     """
     Runs through a list of numbers. If each new number is the sum of any two in recent history,
@@ -180,13 +176,13 @@ class ConsecutiveSum:
 
 
 def task_1(raw_data, preamble_length):
-    data = parse_data(raw_data)
+    data = utils.parse_int_data(raw_data)
     nn = NumberList(data, preamble_length)
     return nn.run()
 
 
 def task_2(raw_data, target):
-    data = parse_data(raw_data)
+    data = utils.parse_int_data(raw_data)
     cs = ConsecutiveSum(data, target)
     return cs.run()
 

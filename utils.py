@@ -42,3 +42,7 @@ def load_input_data(cache_file, url, cookie_file):
             raw_data = fh.read()
 
     return raw_data
+
+
+def parse_int_data(raw_data):
+    return (int(line.strip()) for line in raw_data.split("\n") if line.strip() != "")
