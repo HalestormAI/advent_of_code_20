@@ -6,7 +6,8 @@ import pytest
 from day9 import (
     NumberList,
     parse_data,
-    task_1
+    task_1,
+    task_2
 )
 
 EXAMPLE_DATA = """35
@@ -115,9 +116,19 @@ def test_is_possible_limits(min_num, max_num, x, expected):
     assert nn._is_possible_with_limits(x) is expected
 
 
-def test_example_case(capsys):
-    task_1(EXAMPLE_DATA, 5)
+def test_task1_example_case(capsys):
+    example_target = 127
+    example_preamble = 5
+
+    tgt = task_1(EXAMPLE_DATA, example_preamble)
     captured = capsys.readouterr()
 
-    n = 127
-    assert captured.out.strip() == f"No pair of numbers can sum to {n} [numbers too large]"
+    assert captured.out.strip() == f"No pair of numbers can sum to {example_target} [numbers too large]"
+    assert tgt == example_target
+
+
+def test_task2_example_case(capsys):
+    example_input = 127
+    example_target = 62
+    output = task_2(EXAMPLE_DATA, example_input)
+    assert output == example_target

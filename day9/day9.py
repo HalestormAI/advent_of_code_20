@@ -47,13 +47,14 @@ class NumberList:
     def run(self):
         for n in self.data_gen:
             if not self._is_possible_with_limits(n):
-                return
+                return n
 
             if not self._has_sum(n):
                 print(f"Although it would be possible, no pair of numbers actually sum to {n}")
+                return n
 
             self._add_number(n)
-        print("All good.")
+        return None
 
     def _initialise_sum_lut(self):
         """
@@ -133,14 +134,64 @@ class NumberList:
         return False
 
 
+class ConsecutiveSum:
+    """
+    Search for a consecutive sub-array that sums to the invalid value from task 1.
+
+    Slide a window along the data. If the sum of the sub-array goes greater than
+    the target, remove the first element of the sub-array, and subtract from the
+    total. Repeat until the sum < the target, then start to expand the sub-array
+    right again.
+    """
+
+    def __init__(self, data, target):
+        self.data_gen = data
+        self.target = target
+
+        self.sub_array = deque([])
+        self.current_sum = 0
+
+    def run(self):
+        for d in self.data_gen:
+            self.sub_array.append(d)
+            self.current_sum += d
+
+            if self.check():
+                return self.output()
+
+            while self.current_sum > self.target:
+                removed = self.sub_array.popleft()
+                self.current_sum -= removed
+
+                if self.check():
+                    return self.output()
+
+    def check(self):
+        if self.current_sum == self.target:
+            return True
+        return False
+
+    def output(self):
+        min_val = min(self.sub_array)
+        max_val = max(self.sub_array)
+        total = min_val + max_val
+        print(f"Done: {min_val} + {max_val} = {total}")
+        return total
+
+
 def task_1(raw_data, preamble_length):
     data = parse_data(raw_data)
-
     nn = NumberList(data, preamble_length)
-    nn.run()
+    return nn.run()
+
+
+def task_2(raw_data, target):
+    data = parse_data(raw_data)
+    cs = ConsecutiveSum(data, target)
+    return cs.run()
 
 
 if __name__ == "__main__":
     input_data = utils.load_input_data("cached_input.txt", INPUT_URL, '../session_cookie.txt')
-
-    task_1(input_data, 25)
+    tgt = task_1(input_data, 25)
+    task_2(input_data, tgt)
